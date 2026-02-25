@@ -85,7 +85,7 @@ async def batch(client: Client, message: Message):
             continue
 
     # Use the source channel ID for encoding instead of default primary channel
-    client.LOGGER(__name__, client.name).info(f"Generating batch link with source channel: {source_channel_id}, first_msg: {f_msg_id}, last_msg: {s_msg_id}")
+    client.LOGGER.info(f"Generating batch link with source channel: {source_channel_id}, first_msg: {f_msg_id}, last_msg: {s_msg_id}")
     string = f"get-{f_msg_id * abs(source_channel_id)}-{s_msg_id * abs(source_channel_id)}"
     base64_string = await encode(string)
     link = f"https://t.me/{client.username}?start={base64_string}"
