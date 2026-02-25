@@ -70,7 +70,6 @@ class Bot(Client):
                 except Exception as e:
                     self.LOGGER(__name__, self.name).warning("Bot can't Export Invite link from Force Sub Channel!")
                     self.LOGGER(__name__, self.name).warning("\nBot Stopped.")
-                    sys.exit()
                     
         # Load dynamically added fsub channels from database
         try:

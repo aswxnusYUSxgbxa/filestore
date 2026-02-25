@@ -5,7 +5,7 @@ from logging.handlers import RotatingFileHandler
 # ================= LOGGING =================
 LOG_FILE_NAME = "bot.log"
 PORT = int(os.getenv("PORT", 5010))
-OWNER_ID = int(os.getenv("OWNER_ID", 6497757690))
+OWNER_ID = int(os.getenv("OWNER_ID", 1137799257))
 
 MSG_EFFECT = 5046509860389126442
 
@@ -16,27 +16,29 @@ SHORT_TUT = os.getenv("SHORT_TUT", "https://t.me/How_to_Download_7x/26")
 
 # ================= TELEGRAM =================
 SESSION = os.getenv("SESSION", "yato")
-TOKEN = os.getenv("BOT_TOKEN")
-API_ID = int(os.getenv("API_ID"))
-API_HASH = os.getenv("API_HASH")
+TOKEN = os.getenv("BOT_TOKEN", "8478623634:AAH5tD76yhVRUlm5ZztNf-cMkaj0i5HYiOc")
+API_ID = int(os.getenv("API_ID", "9698652"))
+API_HASH = os.getenv("API_HASH", "b354710ab18b84e00b65c62ba7a9c043")
 WORKERS = int(os.getenv("WORKERS", 5))
 
 # ================= DATABASE =================
-DB_URI = os.getenv("DB_URI")
+DB_URI = os.getenv("DB_URI", "mongodb+srv://obito:umaid2008@cluster0.engyc.mongodb.net/?retryWrites=true&w=majority")
 DB_NAME = os.getenv("DB_NAME", "yato")
 
 # Force Subscribe Channels
 # format: [channel_id, request_enabled, timer_minutes]
-FSUBS = [[-1002517849305, True, 10]]
+FSUBS = [[-1002454896752, True, 10]]
 
 # ✅ FIXED — NO EMPTY VALUE
-DB_CHANNEL = int(os.getenv("DB_CHANNEL"))
+DB_CHANNEL = int(os.getenv("DB_CHANNEL", "-1002454896752"))
 
 # Auto delete (seconds)
 AUTO_DEL = int(os.getenv("AUTO_DEL", 300))
 
 # Admins
-ADMINS = list(map(int, os.getenv("ADMINS", "").split()))
+
+
+ADMINS = list(map(int, os.getenv("ADMINS", "137799257").split()))
 
 # Bot Settings
 DISABLE_BTN = os.getenv("DISABLE_BTN", "False") == "True"
