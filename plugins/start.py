@@ -20,7 +20,7 @@ async def start_command(client: Client, message: Message):
         try:
             await client.mongodb.add_user(user_id)
         except Exception as e:
-            client.LOGGER(__name__, client.name).warning(f"Error adding a user:\n{e}")
+            client.LOGGER.warning(f"Error adding a user:\n{e}")
 
     # 2. Check if banned
     is_banned = await client.mongodb.is_banned(user_id)
@@ -52,7 +52,7 @@ async def start_command(client: Client, message: Message):
             try:
                 short_link = get_short(f"https://t.me/{client.username}?start=yu3elk{base64_string}7", client)
             except Exception as e:
-                client.LOGGER(__name__, client.name).warning(f"Shortener failed: {e}")
+                client.LOGGER.warning(f"Shortener failed: {e}")
                 return await message.reply("Couldn't generate short link.")
 
             short_photo = client.messages.get("SHORT_PIC", "")
@@ -97,7 +97,7 @@ async def start_command(client: Client, message: Message):
                     source_channel_id = client.db
                     start = start_primary
                     end = end_primary
-                    client.LOGGER(__name__, client.name).info(f"Decoded batch from primary channel {source_channel_id}: {start}-{end}")
+                    client.LOGGER.info(f"Decoded batch from primary channel {source_channel_id}: {start}-{end}")
                 else:
                     # Try secondary channels
                     db_channels = getattr(client, 'db_channels', {})
@@ -111,7 +111,7 @@ async def start_command(client: Client, message: Message):
                             source_channel_id = channel_id
                             start = start_test
                             end = end_test
-                            client.LOGGER(__name__, client.name).info(f"Decoded batch from secondary channel {source_channel_id}: {start}-{end}")
+                            client.LOGGER.info(f"Decoded batch from secondary channel {source_channel_id}: {start}-{end}")
                             break
                     
                     # Fallback to primary if no match found
@@ -157,7 +157,7 @@ async def start_command(client: Client, message: Message):
                     ids = [int(encoded_msg / abs(client.db))]
 
         except Exception as e:
-            client.LOGGER(__name__, client.name).warning(f"Error decoding base64: {e}")
+            client.LOGGER.warning(f"Error decoding base64: {e}")
             return await message.reply("⚠️ Invalid or expired link.")
 
         # 7. Get messages from the specific source channel first
@@ -167,7 +167,7 @@ async def start_command(client: Client, message: Message):
         try:
             # Try to get messages from the identified source channel first
             if source_channel_id:
-                client.LOGGER(__name__, client.name).info(f"Trying to get messages from source channel: {source_channel_id}")
+                client.LOGGER.info(f"Trying to get messages from source channel: {source_channel_id}")
                 try:
                     msgs = await client.get_messages(
                         chat_id=source_channel_id,
@@ -176,28 +176,28 @@ async def start_command(client: Client, message: Message):
                     # Filter out None messages (deleted/not found)
                     valid_msgs = [msg for msg in msgs if msg is not None]
                     messages.extend(valid_msgs)
-                    client.LOGGER(__name__, client.name).info(f"Found {len(valid_msgs)} messages from source channel {source_channel_id}")
+                    client.LOGGER.info(f"Found {len(valid_msgs)} messages from source channel {source_channel_id}")
                     
                     # If we didn't get all messages, try the fallback system
                     if len(valid_msgs) < len(list(ids)):
                         missing_ids = [mid for mid in ids if mid not in {msg.id for msg in valid_msgs}]
                         if missing_ids:
-                            client.LOGGER(__name__, client.name).info(f"Missing {len(missing_ids)} messages, trying fallback system")
+                            client.LOGGER.info(f"Missing {len(missing_ids)} messages, trying fallback system")
                             # Use the fallback system for missing messages
                             additional_messages = await get_messages(client, missing_ids)
                             messages.extend(additional_messages)
-                            client.LOGGER(__name__, client.name).info(f"Found {len(additional_messages)} additional messages from fallback")
+                            client.LOGGER.info(f"Found {len(additional_messages)} additional messages from fallback")
                 except Exception as e:
-                    client.LOGGER(__name__, client.name).warning(f"Error getting messages from source channel {source_channel_id}: {e}")
+                    client.LOGGER.warning(f"Error getting messages from source channel {source_channel_id}: {e}")
                     # Fallback to the multi-channel system
                     messages = await get_messages(client, ids)
             else:
-                client.LOGGER(__name__, client.name).info("No specific source channel identified, using multi-channel fallback")
+                client.LOGGER.info("No specific source channel identified, using multi-channel fallback")
                 # Use the multi-channel fallback system
                 messages = await get_messages(client, ids)
         except Exception as e:
             await temp_msg.edit_text("Something went wrong!")
-            client.LOGGER(__name__, client.name).warning(f"Error getting messages: {e}")
+            client.LOGGER.warning(f"Error getting messages: {e}")
             return
 
         if not messages:
@@ -232,7 +232,7 @@ async def start_command(client: Client, message: Message):
                 )
                 yugen_msgs.append(copied_msg)
             except Exception as e:
-                client.LOGGER(__name__, client.name).warning(f"Failed to send message: {e}")
+                client.LOGGER.warning(f"Failed to send message: {e}")
                 pass
 
         # 8. Auto delete timer

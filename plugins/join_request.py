@@ -27,7 +27,7 @@ async def handle_join_request(client, join_request: ChatJoinRequest):
         await client.mongodb.add_channel_user(channel_id, user_id)
         
     except Exception as e:
-        client.LOGGER(__name__, client.name).error(f"Join request error: {user_id} in {channel_id}: {e}")
+        client.LOGGER.error(f"Join request error: {user_id} in {channel_id}: {e}")
 
 @Client.on_chat_member_updated(filters.channel)
 async def handle_member_update(client, chat_member_updated: ChatMemberUpdated):
@@ -85,7 +85,7 @@ async def handle_member_update(client, chat_member_updated: ChatMemberUpdated):
             await client.mongodb.add_channel_user(channel_id, user_id)
             
     except Exception as e:
-        client.LOGGER(__name__, client.name).error(f"Member update error: {user_id} in {channel_id}: {e}")
+        client.LOGGER.error(f"Member update error: {user_id} in {channel_id}: {e}")
 
 
         
