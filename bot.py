@@ -25,7 +25,7 @@ class Bot(Client):
             workers=workers,
             bot_token=token
         )
-        self.LOGGER = LOGGER
+        self.LOGGER = LOGGER(__name__, session)
         self.name = session
         self.db = db
         self.fsub = fsub
@@ -68,8 +68,10 @@ class Bot(Client):
                     if channel[2] > 0:
                         self.fsub_dict[channel[0]] = [name, None, channel[1], channel[2]]
                 except Exception as e:
-                    self.LOGGER(__name__, self.name).warning("Bot can't Export Invite link from Force Sub Channel!")
-                    self.LOGGER(__name__, self.name).warning("\nBot Stopped.")
+                    self.LOGGER.warning(f"Error loading static fsub channel {channel[0]}: {e}")
+                    self.LOGGER.warning("Bot can't Export Invite link from Force Sub Channel!")
+                    self.LOGGER.warning("\nBot Stopped.")
+                    sys.exit()
                     
         # Load dynamically added fsub channels from database
         try:
@@ -88,11 +90,11 @@ class Bot(Client):
                     if channel_data[2]:  # if request is True
                         self.req_channels.append(channel_id)
                 except Exception as e:
-                    self.LOGGER(__name__, self.name).warning(f"Could not load dynamic fsub channel {channel_id}: {e}")
+                    self.LOGGER.warning(f"Could not load dynamic fsub channel {channel_id}: {e}")
                     # Remove invalid channel from database
                     await self.mongodb.remove_fsub_channel(channel_id)
         except Exception as e:
-            self.LOGGER(__name__, self.name).warning(f"Error loading dynamic fsub channels: {e}")
+            self.LOGGER.warning(f"Error loading dynamic fsub channels: {e}")
             
         await self.mongodb.set_channels(self.req_channels)
         
@@ -117,11 +119,11 @@ class Bot(Client):
                         self.db = channel_id  # Update current db reference
                         
                 except Exception as e:
-                    self.LOGGER(__name__, self.name).warning(f"Could not load DB channel {channel_id}: {e}")
+                    self.LOGGER.warning(f"Could not load DB channel {channel_id}: {e}")
                     # Remove invalid channel from database
                     await self.mongodb.remove_db_channel(channel_id)
         except Exception as e:
-            self.LOGGER(__name__, self.name).warning(f"Error loading DB channels: {e}")
+            self.LOGGER.warning(f"Error loading DB channels: {e}")
         
         # Load shortner settings from database
         try:
@@ -131,7 +133,7 @@ class Bot(Client):
             self.tutorial_link = shortner_settings.get('tutorial_link', SHORT_TUT)
             self.shortner_enabled = shortner_settings.get('enabled', True)
         except Exception as e:
-            self.LOGGER(__name__, self.name).warning(f"Error loading shortner settings: {e}")
+            self.LOGGER.warning(f"Error loading shortner settings: {e}")
             # Set defaults from config if loading fails
             self.short_url = SHORT_URL
             self.short_api = SHORT_API
@@ -145,27 +147,27 @@ class Bot(Client):
             await test.delete()
             
             # Log DB channels info
-            self.LOGGER(__name__, self.name).info(f"Primary DB Channel: {self.primary_db_channel}")
-            self.LOGGER(__name__, self.name).info(f"Total DB Channels: {len(self.db_channels)}")
+            self.LOGGER.info(f"Primary DB Channel: {self.primary_db_channel}")
+            self.LOGGER.info(f"Total DB Channels: {len(self.db_channels)}")
         except Exception as e:
-            self.LOGGER(__name__, self.name).warning(e)
-            self.LOGGER(__name__, self.name).warning(f"Make Sure bot is Admin in DB Channel, and Double check the database channel Value, Current Value {self.db}")
-            self.LOGGER(__name__, self.name).info("\nBot Stopped. Join https://t.me/animes_cruise for support")
+            self.LOGGER.exception(e)
+            self.LOGGER.warning(f"Make Sure bot is Admin in DB Channel, and Double check the database channel Value, Current Value {self.db}")
+            self.LOGGER.info("\nBot Stopped. Join https://t.me/animes_cruise for support")
             sys.exit()
-        self.LOGGER(__name__, self.name).info("Bot Started!!")
+        self.LOGGER.info("Bot Started!!")
         
         # Send restart msge to owner
         try:
             restart_message = "<b>›› ʜᴇʏ sᴇɴᴘᴀɪ!!\n ɪ'ᴍ ᴀʟɪᴠᴇ ɴᴏᴡ 🍃...</b>"
             await self.send_message(chat_id=self.owner, text=restart_message)
-            self.LOGGER(__name__, self.name).info(f"Restart notification sent to owner: {self.owner}")
+            self.LOGGER.info(f"Restart notification sent to owner: {self.owner}")
         except Exception as e:
-            self.LOGGER(__name__, self.name).warning(f"Failed to send restart notification to owner: {e}")
+            self.LOGGER.warning(f"Failed to send restart notification to owner: {e}")
         
         self.username = usr_bot_me.username
     async def stop(self, *args):
         await super().stop()
-        self.LOGGER(__name__, self.name).info("Bot stopped.")
+        self.LOGGER.info("Bot stopped.")
 
 
 async def web_app():
